@@ -5,237 +5,239 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DeFi APY Tracker</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0d0f1a;
-      color: #e0e0e0;
-      min-height: 100vh;
+    :root {
+      --bg: #0d0f1a;
+      --bg2: #131626;
+      --bg3: #0f1120;
+      --border: #1e2340;
+      --border2: #2a2f4a;
+      --text: #e0e0e0;
+      --text2: #8899bb;
+      --accent: #00e5ff;
+      --accent2: #7c4dff;
+      --green: #00e676;
+      --yellow: #ffb300;
+      --red: #ff5252;
+      --muted: #556080;
     }
+    .light {
+      --bg: #f0f4ff;
+      --bg2: #ffffff;
+      --bg3: #e8edf8;
+      --border: #d0d8f0;
+      --border2: #b0bce0;
+      --text: #1a1e30;
+      --text2: #4a5580;
+      --accent: #0066cc;
+      --accent2: #6600cc;
+      --muted: #7080a0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.3s, color 0.3s; }
 
+    /* HEADER */
     header {
-      background: #131626;
-      border-bottom: 1px solid #1e2340;
-      padding: 18px 30px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(10px);
     }
-
-    header h1 {
-      font-size: 1.4rem;
-      color: #00e5ff;
-      letter-spacing: 1px;
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
     }
-
-    #last-updated {
-      font-size: 0.78rem;
-      color: #555f80;
+    header h1 { font-size: 1.2rem; color: var(--accent); letter-spacing: 0.5px; }
+    header h1 span { color: var(--text2); font-weight: 400; font-size: 0.85rem; margin-left: 8px; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    #last-updated { font-size: 0.75rem; color: var(--muted); }
+    .theme-btn {
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); padding: 6px 12px; border-radius: 8px;
+      cursor: pointer; font-size: 0.82rem; transition: all 0.2s;
     }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
 
+    /* TOP PICKS */
+    .top-picks {
+      padding: 16px 24px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .top-picks h2 { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .picks-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+    .pick-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      min-width: 180px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    .pick-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .pick-card .pick-protocol { font-size: 0.78rem; color: var(--text2); margin-bottom: 2px; }
+    .pick-card .pick-pool { font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+    .pick-card .pick-apy { font-size: 1.2rem; font-weight: 700; color: var(--green); }
+    .pick-card .pick-meta { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+    /* CONTROLS */
     .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 20px 30px;
-      background: #0f1120;
-      border-bottom: 1px solid #1e2340;
+      display: flex; flex-wrap: wrap; gap: 10px;
+      padding: 14px 24px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
       align-items: center;
     }
-
     .controls input, .controls select {
-      background: #1a1e30;
-      border: 1px solid #2a2f4a;
-      color: #e0e0e0;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      outline: none;
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); padding: 8px 12px; border-radius: 8px;
+      font-size: 0.85rem; outline: none; transition: border-color 0.2s;
     }
-
-    .controls input:focus, .controls select:focus {
-      border-color: #00e5ff;
-    }
-
+    .controls input:focus, .controls select:focus { border-color: var(--accent); }
     .controls input { width: 220px; }
-
-    .stats {
-      display: flex;
-      gap: 16px;
-      padding: 16px 30px;
-      flex-wrap: wrap;
+    .fav-toggle {
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text2); padding: 8px 14px; border-radius: 8px;
+      cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
     }
+    .fav-toggle.active { border-color: #ffb300; color: #ffb300; background: #1a1500; }
 
+    /* STATS */
+    .stats { display: flex; gap: 12px; padding: 14px 24px; flex-wrap: wrap; }
     .stat-card {
-      background: #131626;
-      border: 1px solid #1e2340;
-      border-radius: 10px;
-      padding: 12px 20px;
-      min-width: 160px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 18px; min-width: 150px;
+      position: relative; overflow: hidden;
     }
-
-    .stat-card .label { font-size: 0.75rem; color: #556; margin-bottom: 4px; }
-    .stat-card .value { font-size: 1.3rem; font-weight: 700; color: #00e5ff; }
-
-    .table-wrap {
-      padding: 0 30px 40px;
-      overflow-x: auto;
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
     }
+    .stat-card .label { font-size: 0.72rem; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-card .value { font-size: 1.25rem; font-weight: 700; color: var(--accent); }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.88rem;
-    }
-
-    thead tr {
-      background: #131626;
-      border-bottom: 2px solid #1e2340;
-    }
-
+    /* TABLE */
+    .table-wrap { padding: 0 24px 40px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.86rem; }
+    thead tr { background: var(--bg2); border-bottom: 2px solid var(--border); }
     th {
-      padding: 12px 14px;
-      text-align: left;
-      color: #556080;
-      font-weight: 600;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
+      padding: 12px 12px; text-align: left; color: var(--muted);
+      font-weight: 600; cursor: pointer; user-select: none; white-space: nowrap;
     }
+    th:hover { color: var(--accent); }
+    th.sorted { color: var(--accent); }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: var(--bg2); }
+    td { padding: 10px 12px; vertical-align: middle; }
 
-    th:hover { color: #00e5ff; }
+    .protocol-name { font-weight: 600; color: var(--text); }
+    .pool-name { color: var(--text2); font-size: 0.8rem; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    tbody tr {
-      border-bottom: 1px solid #161a2a;
-      transition: background 0.15s;
-    }
+    .apy { font-weight: 700; font-size: 0.95rem; }
+    .apy.high { color: var(--green); }
+    .apy.medium { color: var(--yellow); }
+    .apy.low { color: var(--muted); }
 
-    tbody tr:hover { background: #131a2e; }
-
-    td {
-      padding: 11px 14px;
-      vertical-align: middle;
-    }
-
-    .protocol-name {
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .pool-name {
-      color: #8899bb;
-      font-size: 0.82rem;
-    }
-
-    .apy {
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .apy.high { color: #00e676; }
-    .apy.medium { color: #ffb300; }
-    .apy.low { color: #78909c; }
+    .trend { font-size: 0.75rem; margin-left: 4px; }
+    .trend.up { color: var(--green); }
+    .trend.down { color: var(--red); }
+    .trend.flat { color: var(--muted); }
 
     .chain-badge {
-      background: #1a2040;
-      border: 1px solid #2a3060;
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 0.75rem;
-      color: #8899cc;
-      white-space: nowrap;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 6px; padding: 2px 7px; font-size: 0.73rem; color: var(--text2); white-space: nowrap;
     }
+    .tvl { color: var(--text2); }
 
-    .tvl { color: #aabbcc; }
-
-    .stable-badge {
-      background: #0a2a1a;
-      border: 1px solid #0d4a2a;
-      color: #00c853;
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 0.72rem;
+    .risk-badge {
+      border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; font-weight: 600;
     }
+    .risk-low { background: #0a2a1a; border: 1px solid #0d4a2a; color: #00c853; }
+    .risk-medium { background: #2a1a00; border: 1px solid #4a3000; color: #ffb300; }
+    .risk-high { background: #2a0a0a; border: 1px solid #5a1a1a; color: #ff5252; }
+
+    .stable-badge { background: #0a2a1a; border: 1px solid #0d4a2a; color: #00c853; border-radius: 6px; padding: 2px 7px; font-size: 0.72rem; }
+
+    .fav-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; transition: transform 0.2s; padding: 2px 6px;
+    }
+    .fav-btn:hover { transform: scale(1.3); }
 
     .link-btn {
-      background: #0a2040;
-      border: 1px solid #1a4080;
-      color: #00aaff;
-      padding: 4px 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.78rem;
-      transition: background 0.15s;
+      background: var(--bg3); border: 1px solid var(--border2); color: var(--accent);
+      padding: 4px 10px; border-radius: 6px; text-decoration: none;
+      font-size: 0.76rem; transition: all 0.15s; white-space: nowrap;
     }
+    .link-btn:hover { border-color: var(--accent); background: var(--bg2); }
 
-    .link-btn:hover { background: #1a3060; }
-
-    #loading {
-      text-align: center;
-      padding: 60px;
-      color: #556;
-      font-size: 1rem;
-    }
-
+    /* LOADING / ERROR */
+    #loading { text-align: center; padding: 60px; color: var(--muted); font-size: 1rem; }
     .spinner {
-      display: inline-block;
-      width: 28px; height: 28px;
-      border: 3px solid #1e2340;
-      border-top-color: #00e5ff;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 12px;
+      display: inline-block; width: 32px; height: 32px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     #error-msg {
-      display: none;
-      background: #2a0a0a;
-      border: 1px solid #5a1a1a;
-      color: #ff6b6b;
-      padding: 14px 20px;
-      margin: 20px 30px;
-      border-radius: 8px;
+      display: none; background: #2a0a0a; border: 1px solid #5a1a1a; color: #ff6b6b;
+      padding: 14px 20px; margin: 20px 24px; border-radius: 8px;
     }
 
-    .pagination {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      padding: 20px 30px;
-      align-items: center;
-    }
-
+    /* PAGINATION */
+    .pagination { display: flex; gap: 8px; justify-content: center; padding: 16px 24px; align-items: center; }
     .pagination button {
-      background: #1a1e30;
-      border: 1px solid #2a2f4a;
-      color: #e0e0e0;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
+      background: var(--bg2); border: 1px solid var(--border2); color: var(--text);
+      padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.83rem; transition: all 0.15s;
     }
-
-    .pagination button:hover { border-color: #00e5ff; color: #00e5ff; }
+    .pagination button:hover { border-color: var(--accent); color: var(--accent); }
     .pagination button:disabled { opacity: 0.3; cursor: default; }
-    .pagination .page-info { color: #556; font-size: 0.85rem; }
+    .pagination .page-info { color: var(--muted); font-size: 0.83rem; }
 
-    @media (max-width: 600px) {
+    /* MOBILE */
+    @media (max-width: 700px) {
       .controls input { width: 100%; }
-      .table-wrap { padding: 0 10px 30px; }
-      .stats { padding: 12px; }
+      .table-wrap { padding: 0 8px 30px; }
+      .stats { padding: 10px; gap: 8px; }
+      .top-picks { padding: 12px; }
+      header { padding: 10px 14px; }
+      header h1 span { display: none; }
+      td.hide-mobile, th.hide-mobile { display: none; }
     }
+
+    /* EMPTY STATE */
+    .empty-state { text-align: center; padding: 50px; color: var(--muted); }
+    .empty-state div { font-size: 2rem; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>⚡ DeFi APY Tracker</h1>
-  <span id="last-updated">Loading data...</span>
+  <div class="header-left">
+    <div class="logo-icon">⚡</div>
+    <h1>DeFi APY Tracker <span>powered by DeFiLlama</span></h1>
+  </div>
+  <div class="header-right">
+    <span id="last-updated">Loading...</span>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙 Dark</button>
+  </div>
 </header>
+
+<div class="top-picks" id="top-picks-section">
+  <h2>⭐ Top 5 Picks — Best Yield / Risk Ratio</h2>
+  <div class="picks-grid" id="picks-grid">
+    <div style="color:var(--muted);font-size:0.85rem;padding:20px">Loading top picks...</div>
+  </div>
+</div>
 
 <div class="controls">
   <input type="text" id="search" placeholder="🔍 Search protocol or pool..." oninput="applyFilters()" />
@@ -254,11 +256,18 @@
     <option value="20">APY > 20%</option>
     <option value="50">APY > 50%</option>
   </select>
+  <select id="risk-filter" onchange="applyFilters()">
+    <option value="">All Risk Levels</option>
+    <option value="low">Low Risk</option>
+    <option value="medium">Medium Risk</option>
+    <option value="high">High Risk</option>
+  </select>
   <select id="sort-select" onchange="applyFilters()">
     <option value="apy_desc">Yield ↓</option>
     <option value="apy_asc">Yield ↑</option>
     <option value="tvl_desc">TVL ↓</option>
   </select>
+  <button class="fav-toggle" id="fav-toggle" onclick="toggleFavFilter()">⭐ Favorites</button>
 </div>
 
 <div class="stats">
@@ -278,6 +287,10 @@
     <div class="label">Chains</div>
     <div class="value" id="stat-chains">—</div>
   </div>
+  <div class="stat-card">
+    <div class="label">Favorites</div>
+    <div class="value" id="stat-favs">0</div>
+  </div>
 </div>
 
 <div id="error-msg">⚠️ Error loading data. Please try again in a moment.</div>
@@ -291,17 +304,24 @@
   <table>
     <thead>
       <tr>
+        <th style="width:36px"></th>
         <th onclick="setSortAndApply('protocol')">Protocol</th>
         <th onclick="setSortAndApply('pool')">Pool</th>
-        <th onclick="setSortAndApply('chain')">Chain</th>
+        <th onclick="setSortAndApply('chain')" class="hide-mobile">Chain</th>
         <th onclick="setSortAndApply('apy_desc')">APY</th>
-        <th onclick="setSortAndApply('tvl_desc')">TVL</th>
-        <th>Stablecoin</th>
+        <th class="hide-mobile">7d Trend</th>
+        <th onclick="setSortAndApply('tvl_desc')" class="hide-mobile">TVL</th>
+        <th class="hide-mobile">Risk</th>
+        <th class="hide-mobile">Stable</th>
         <th>Link</th>
       </tr>
     </thead>
     <tbody id="table-body"></tbody>
   </table>
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div>🔍</div>
+    No pools match your filters.
+  </div>
 </div>
 
 <div class="pagination" id="pagination" style="display:none">
@@ -315,6 +335,52 @@
   let filteredPools = [];
   let currentPage = 1;
   const PAGE_SIZE = 50;
+  let favorites = JSON.parse(localStorage.getItem('defi_favs') || '[]');
+  let showFavOnly = false;
+  let isLight = false;
+
+  // Risk scoring
+  function getRisk(p) {
+    const tvl = p.tvlUsd;
+    const apy = p.apy;
+    if (tvl > 50_000_000 && apy < 30) return 'low';
+    if (tvl > 5_000_000 && apy < 80) return 'medium';
+    return 'high';
+  }
+
+  // Trend indicator based on apyMean7d vs current apy
+  function getTrend(p) {
+    if (!p.apyMean30d) return { label: '—', cls: 'flat' };
+    const diff = p.apy - p.apyMean30d;
+    if (diff > 2) return { label: '▲ ' + diff.toFixed(1) + '%', cls: 'up' };
+    if (diff < -2) return { label: '▼ ' + Math.abs(diff).toFixed(1) + '%', cls: 'down' };
+    return { label: '● stable', cls: 'flat' };
+  }
+
+  function isFav(id) { return favorites.includes(id); }
+
+  function toggleFav(id) {
+    if (isFav(id)) {
+      favorites = favorites.filter(f => f !== id);
+    } else {
+      favorites.push(id);
+    }
+    localStorage.setItem('defi_favs', JSON.stringify(favorites));
+    document.getElementById('stat-favs').textContent = favorites.length;
+    renderPage();
+  }
+
+  function toggleFavFilter() {
+    showFavOnly = !showFavOnly;
+    document.getElementById('fav-toggle').classList.toggle('active', showFavOnly);
+    applyFilters();
+  }
+
+  function toggleTheme() {
+    isLight = !isLight;
+    document.body.classList.toggle('light', isLight);
+    document.getElementById('theme-btn').textContent = isLight ? '🌙 Dark' : '☀️ Light';
+  }
 
   async function fetchData() {
     try {
@@ -324,21 +390,51 @@
       allPools = json.data.filter(p => p.apy != null && p.apy > 0 && p.tvlUsd > 10000);
       allPools.sort((a, b) => b.apy - a.apy);
       populateChainFilter();
+      renderTopPicks();
       applyFilters();
       document.getElementById('loading').style.display = 'none';
       document.getElementById('table-wrap').style.display = '';
       document.getElementById('pagination').style.display = 'flex';
       const now = new Date();
       document.getElementById('last-updated').textContent = 'Updated: ' + now.toLocaleTimeString('en');
+      document.getElementById('stat-favs').textContent = favorites.length;
     } catch (e) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error-msg').style.display = 'block';
     }
   }
 
+  function renderTopPicks() {
+    // Score = (APY * 0.4) + (log10(TVL) * 10) - risk penalty
+    const scored = allPools.map(p => {
+      const risk = getRisk(p);
+      const riskPenalty = risk === 'low' ? 0 : risk === 'medium' ? 10 : 30;
+      const score = (Math.min(p.apy, 100) * 0.4) + (Math.log10(p.tvlUsd) * 8) - riskPenalty;
+      return { ...p, score };
+    }).sort((a, b) => b.score - a.score).slice(0, 5);
+
+    const grid = document.getElementById('picks-grid');
+    grid.innerHTML = scored.map(p => `
+      <div class="pick-card" onclick="filterToPool('${escHtml(p.project)}')">
+        <div class="pick-protocol">${escHtml(p.project)}</div>
+        <div class="pick-pool" title="${escHtml(p.symbol)}">${escHtml(p.symbol)}</div>
+        <div class="pick-apy">${p.apy.toFixed(2)}% APY</div>
+        <div class="pick-meta">${escHtml(p.chain)} · ${getRisk(p)} risk · $${fmtTvl(p.tvlUsd)} TVL</div>
+      </div>
+    `).join('');
+  }
+
+  function filterToPool(protocol) {
+    document.getElementById('search').value = protocol;
+    applyFilters();
+    document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth' });
+  }
+
   function populateChainFilter() {
     const chains = [...new Set(allPools.map(p => p.chain))].sort();
     const sel = document.getElementById('chain-filter');
+    // keep first option
+    while (sel.options.length > 1) sel.remove(1);
     chains.forEach(c => {
       const opt = document.createElement('option');
       opt.value = c; opt.textContent = c;
@@ -351,14 +447,17 @@
     const chain = document.getElementById('chain-filter').value;
     const stable = document.getElementById('stable-filter').value;
     const minApy = parseFloat(document.getElementById('apy-filter').value) || 0;
+    const riskF = document.getElementById('risk-filter').value;
     const sort = document.getElementById('sort-select').value;
 
     filteredPools = allPools.filter(p => {
+      if (showFavOnly && !isFav(p.pool)) return false;
       if (search && !p.project.toLowerCase().includes(search) && !p.symbol.toLowerCase().includes(search)) return false;
       if (chain && p.chain !== chain) return false;
       if (stable === 'true' && !p.stablecoin) return false;
       if (stable === 'false' && p.stablecoin) return false;
       if (p.apy < minApy) return false;
+      if (riskF && getRisk(p) !== riskF) return false;
       return true;
     });
 
@@ -387,35 +486,46 @@
     document.getElementById('stat-chains').textContent = chains;
   }
 
+  function fmtTvl(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+    return (v / 1e3).toFixed(1) + 'K';
+  }
+
   function renderPage() {
     const start = (currentPage - 1) * PAGE_SIZE;
     const page = filteredPools.slice(start, start + PAGE_SIZE);
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = '';
 
+    document.getElementById('empty-state').style.display = page.length === 0 ? 'block' : 'none';
+
     page.forEach(p => {
       const apy = p.apy;
       const apyClass = apy >= 20 ? 'high' : apy >= 5 ? 'medium' : 'low';
-      const tvl = p.tvlUsd >= 1e9 ? (p.tvlUsd / 1e9).toFixed(2) + 'B' :
-                  p.tvlUsd >= 1e6 ? (p.tvlUsd / 1e6).toFixed(2) + 'M' :
-                  (p.tvlUsd / 1e3).toFixed(1) + 'K';
+      const risk = getRisk(p);
+      const trend = getTrend(p);
+      const fav = isFav(p.pool);
       const url = `https://defillama.com/yields/pool/${p.pool}`;
       tbody.innerHTML += `
         <tr>
+          <td><button class="fav-btn" onclick="toggleFav('${p.pool}')" title="${fav ? 'Remove favorite' : 'Add to favorites'}">${fav ? '⭐' : '☆'}</button></td>
           <td class="protocol-name">${escHtml(p.project)}</td>
-          <td class="pool-name">${escHtml(p.symbol)}</td>
-          <td><span class="chain-badge">${escHtml(p.chain)}</span></td>
+          <td class="pool-name" title="${escHtml(p.symbol)}">${escHtml(p.symbol)}</td>
+          <td class="hide-mobile"><span class="chain-badge">${escHtml(p.chain)}</span></td>
           <td><span class="apy ${apyClass}">${apy.toFixed(2)}%</span></td>
-          <td class="tvl">$${tvl}</td>
-          <td>${p.stablecoin ? '<span class="stable-badge">✓ Stable</span>' : '—'}</td>
+          <td class="hide-mobile"><span class="trend ${trend.cls}">${trend.label}</span></td>
+          <td class="tvl hide-mobile">$${fmtTvl(p.tvlUsd)}</td>
+          <td class="hide-mobile"><span class="risk-badge risk-${risk}">${risk}</span></td>
+          <td class="hide-mobile">${p.stablecoin ? '<span class="stable-badge">✓ Stable</span>' : '—'}</td>
           <td><a href="${url}" target="_blank" class="link-btn">Open →</a></td>
         </tr>`;
     });
 
-    const totalPages = Math.ceil(filteredPools.length / PAGE_SIZE);
+    const totalPages = Math.max(1, Math.ceil(filteredPools.length / PAGE_SIZE));
     document.getElementById('page-info').textContent = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('btn-prev').disabled = currentPage === 1;
-    document.getElementById('btn-next').disabled = currentPage === totalPages;
+    document.getElementById('btn-next').disabled = currentPage >= totalPages;
   }
 
   function changePage(dir) {
@@ -425,7 +535,7 @@
   }
 
   function escHtml(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
   fetchData();
