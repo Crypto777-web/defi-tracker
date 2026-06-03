@@ -221,6 +221,45 @@
     }
     footer a { color: var(--text2); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+
+    /* CONTACT FORM */
+    .contact-section {
+      margin: 0 28px 30px; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+    }
+    .contact-header {
+      padding: 14px 20px; background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .contact-header h3 { font-size: 0.88rem; color: var(--text); }
+    .contact-header p { font-size: 0.78rem; color: var(--text2); margin-top: 3px; }
+    .contact-body { padding: 20px; }
+    .contact-body form { display: flex; flex-direction: column; gap: 12px; max-width: 500px; }
+    .form-row { display: flex; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+    .form-group label { font-size: 0.75rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group textarea {
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text); padding: 10px 14px; border-radius: 8px;
+      font-size: 0.85rem; outline: none; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .send-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; padding: 10px 24px; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s; align-self: flex-start;
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+    .send-btn:hover { opacity: 0.85; }
+    .send-btn:disabled { opacity: 0.5; cursor: default; }
+    .form-success {
+      display: none; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green); padding: 12px 16px; border-radius: 8px; font-size: 0.85rem;
+    }
+    @media (max-width: 600px) { .form-row { flex-direction: column; } }
     @media (max-width: 700px) {
       .controls input { width: 100%; }
       .table-wrap { padding: 0 8px 30px; }
@@ -346,7 +385,7 @@
   </div>
   <div class="header-right">
     <span id="last-updated">Loading...</span>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdW1p1OggE2Um9VGlMF6Wa2EGmc1mFF9CtfBdHpGkUMbwI4Rg/viewform" target="_blank" class="hdr-btn">✉️ Contact</a>
+    <a href="#contact-form" class="hdr-btn">✉️ Contact</a>
     <button class="hdr-btn" onclick="toggleTheme()" id="theme-btn">🌙 Dark</button>
   </div>
 </header>
@@ -460,6 +499,34 @@
   <span class="page-info" id="page-info"></span>
   <button id="btn-next" onclick="changePage(1)">Next →</button>
 </div>
+<!-- CONTACT -->
+<div class="contact-section">
+  <div class="contact-header">
+    <h3>✉️ Contact Us</h3>
+    <p>Have a suggestion, found a bug, or want to collaborate? Send us a message.</p>
+  </div>
+  <div class="contact-body">
+    <div class="form-success" id="form-success">✅ Message sent! We'll get back to you soon.</div>
+    <form id="contact-form" action="https://formspree.io/f/mojzqjob" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" name="name" placeholder="John Doe" required />
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" name="email" placeholder="you@example.com" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea name="message" placeholder="What's on your mind?" required></textarea>
+      </div>
+      <button type="submit" class="send-btn" id="send-btn">Send Message →</button>
+    </form>
+  </div>
+</div>
+
 <!-- HOW TO USE -->
 <div class="how-to">
   <h3>📖 How to use this tracker</h3>
@@ -734,6 +801,27 @@
     });
   }
   setMode('beginner');
+
+  // CONTACT FORM
+  document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('send-btn');
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    try {
+      const res = await fetch('https://formspree.io/f/mojzqjob', {
+        method: 'POST',
+        body: new FormData(this),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        document.getElementById('form-success').style.display = 'block';
+        this.reset();
+        btn.textContent = 'Send Message →'; btn.disabled = false;
+      } else { throw new Error(); }
+    } catch {
+      btn.textContent = 'Error — try again'; btn.disabled = false;
+    }
+  });
 
   // EXPLAINER
   function toggleExplainer() {
