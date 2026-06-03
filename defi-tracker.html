@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -234,64 +234,64 @@
 
 <header>
   <h1>⚡ DeFi APY Tracker</h1>
-  <span id="last-updated">Učitavam podatke...</span>
+  <span id="last-updated">Loading data...</span>
 </header>
 
 <div class="controls">
-  <input type="text" id="search" placeholder="🔍 Pretraži protokol ili pool..." oninput="applyFilters()" />
+  <input type="text" id="search" placeholder="🔍 Search protocol or pool..." oninput="applyFilters()" />
   <select id="chain-filter" onchange="applyFilters()">
-    <option value="">Svi chainsovi</option>
+    <option value="">All Chains</option>
   </select>
   <select id="stable-filter" onchange="applyFilters()">
-    <option value="">Svi tokeni</option>
-    <option value="true">Samo stablecoini</option>
-    <option value="false">Samo volatile</option>
+    <option value="">All Tokens</option>
+    <option value="true">Stablecoins Only</option>
+    <option value="false">Volatile Only</option>
   </select>
   <select id="apy-filter" onchange="applyFilters()">
-    <option value="">Svi prinosi</option>
+    <option value="">All Yields</option>
     <option value="5">APY > 5%</option>
     <option value="10">APY > 10%</option>
     <option value="20">APY > 20%</option>
     <option value="50">APY > 50%</option>
   </select>
   <select id="sort-select" onchange="applyFilters()">
-    <option value="apy_desc">Prinos ↓</option>
-    <option value="apy_asc">Prinos ↑</option>
+    <option value="apy_desc">Yield ↓</option>
+    <option value="apy_asc">Yield ↑</option>
     <option value="tvl_desc">TVL ↓</option>
   </select>
 </div>
 
 <div class="stats">
   <div class="stat-card">
-    <div class="label">Ukupno poolova</div>
+    <div class="label">Total Pools</div>
     <div class="value" id="stat-total">—</div>
   </div>
   <div class="stat-card">
-    <div class="label">Prosečan APY</div>
+    <div class="label">Average APY</div>
     <div class="value" id="stat-avg">—</div>
   </div>
   <div class="stat-card">
-    <div class="label">Najviši APY</div>
+    <div class="label">Highest APY</div>
     <div class="value" id="stat-max">—</div>
   </div>
   <div class="stat-card">
-    <div class="label">Chainsovi</div>
+    <div class="label">Chains</div>
     <div class="value" id="stat-chains">—</div>
   </div>
 </div>
 
-<div id="error-msg">⚠️ Greška pri učitavanju podataka. Pokušaj ponovo za koji trenutak.</div>
+<div id="error-msg">⚠️ Error loading data. Please try again in a moment.</div>
 
 <div id="loading">
   <div class="spinner"></div><br/>
-  Učitavam DeFi podatke...
+  Loading DeFi data...
 </div>
 
 <div class="table-wrap" style="display:none" id="table-wrap">
   <table>
     <thead>
       <tr>
-        <th onclick="setSortAndApply('protocol')">Protokol</th>
+        <th onclick="setSortAndApply('protocol')">Protocol</th>
         <th onclick="setSortAndApply('pool')">Pool</th>
         <th onclick="setSortAndApply('chain')">Chain</th>
         <th onclick="setSortAndApply('apy_desc')">APY</th>
@@ -305,9 +305,9 @@
 </div>
 
 <div class="pagination" id="pagination" style="display:none">
-  <button id="btn-prev" onclick="changePage(-1)" disabled>← Prethodna</button>
+  <button id="btn-prev" onclick="changePage(-1)" disabled>← Previous</button>
   <span class="page-info" id="page-info"></span>
-  <button id="btn-next" onclick="changePage(1)">Sledeća →</button>
+  <button id="btn-next" onclick="changePage(1)">Next →</button>
 </div>
 
 <script>
@@ -319,7 +319,7 @@
   async function fetchData() {
     try {
       const res = await fetch('https://yields.llama.fi/pools');
-      if (!res.ok) throw new Error('API greška');
+      if (!res.ok) throw new Error('API error');
       const json = await res.json();
       allPools = json.data.filter(p => p.apy != null && p.apy > 0 && p.tvlUsd > 10000);
       allPools.sort((a, b) => b.apy - a.apy);
@@ -329,7 +329,7 @@
       document.getElementById('table-wrap').style.display = '';
       document.getElementById('pagination').style.display = 'flex';
       const now = new Date();
-      document.getElementById('last-updated').textContent = 'Ažurirano: ' + now.toLocaleTimeString('sr');
+      document.getElementById('last-updated').textContent = 'Updated: ' + now.toLocaleTimeString('en');
     } catch (e) {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error-msg').style.display = 'block';
@@ -408,12 +408,12 @@
           <td><span class="apy ${apyClass}">${apy.toFixed(2)}%</span></td>
           <td class="tvl">$${tvl}</td>
           <td>${p.stablecoin ? '<span class="stable-badge">✓ Stable</span>' : '—'}</td>
-          <td><a href="${url}" target="_blank" class="link-btn">Otvori →</a></td>
+          <td><a href="${url}" target="_blank" class="link-btn">Open →</a></td>
         </tr>`;
     });
 
     const totalPages = Math.ceil(filteredPools.length / PAGE_SIZE);
-    document.getElementById('page-info').textContent = `Strana ${currentPage} / ${totalPages}`;
+    document.getElementById('page-info').textContent = `Page ${currentPage} / ${totalPages}`;
     document.getElementById('btn-prev').disabled = currentPage === 1;
     document.getElementById('btn-next').disabled = currentPage === totalPages;
   }
