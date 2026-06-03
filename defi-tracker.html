@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APY Tracker — Best DeFi Yields</title>
+  <meta name="description" content="Track the best DeFi yields across all blockchains. Real-time APY data powered by DeFiLlama." />
+  <style>
+    :root {
+      --bg: #080b14;
+      --bg2: #0e1220;
+      --bg3: #131828;
+      --bg4: #1a2035;
+      --border: #1e2640;
+      --border2: #2a3560;
+      --text: #eef0f8;
+      --text2: #7a88b0;
+      --accent: #4361ee;
+      --accent2: #7c3aed;
+      --accent-glow: rgba(67,97,238,0.3);
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --muted: #4a5680;
+      --card-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    .light {
+      --bg: #f1f5ff;
+      --bg2: #ffffff;
+      --bg3: #e8eeff;
+      --bg4: #dde5ff;
+      --border: #c8d4f0;
+      --border2: #a0b4e0;
+      --text: #0f1628;
+      --text2: #4a5580;
+      --accent: #3451d1;
+      --accent2: #6d28d9;
+      --accent-glow: rgba(67,97,238,0.15);
+      --muted: #6070a0;
+      --card-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; transition: background 0.3s, color 0.3s; }
+
+    /* ─── HEADER ─── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+
+    /* LOGO */
+    .logo {
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .logo-mark {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0; position: relative;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    .logo-mark svg { width: 22px; height: 22px; }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-text .name { font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+    .logo-text .tagline { font-size: 0.65rem; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    #last-updated { font-size: 0.72rem; color: var(--muted); }
+
+    .hdr-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      color: var(--text2); padding: 6px 14px; border-radius: 8px;
+      cursor: pointer; font-size: 0.82rem; text-decoration: none;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .hdr-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--bg4); }
+
+    /* ─── TOP PICKS ─── */
+    .top-picks {
+      padding: 20px 28px;
+      background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 0.72rem; color: var(--text2); text-transform: uppercase;
+      letter-spacing: 1.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .picks-grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+    .picks-grid::-webkit-scrollbar { height: 4px; }
+    .picks-grid::-webkit-scrollbar-track { background: var(--bg3); border-radius: 2px; }
+    .picks-grid::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .pick-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      min-width: 190px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .pick-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .pick-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--card-shadow); }
+    .pick-rank { position: absolute; top: 10px; right: 12px; font-size: 0.7rem; color: var(--muted); font-weight: 700; }
+    .pick-protocol { font-size: 0.72rem; color: var(--text2); margin-bottom: 3px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .pick-pool { font-size: 0.88rem; font-weight: 700; color: var(--text); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+    .pick-apy { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, var(--green), #16a34a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .pick-meta { font-size: 0.7rem; color: var(--muted); margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .pick-meta span { background: var(--bg4); padding: 2px 6px; border-radius: 4px; }
+
+    /* ─── CONTROLS ─── */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      padding: 14px 28px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .search-wrap { position: relative; }
+    .search-wrap input { padding-left: 34px; }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+
+    .controls input, .controls select {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 12px; border-radius: 10px;
+      font-size: 0.84rem; outline: none; transition: all 0.2s;
+      appearance: none;
+    }
+    .controls input { width: 230px; }
+    .controls input:focus, .controls select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+    .fav-toggle {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text2); padding: 8px 14px; border-radius: 10px;
+      cursor: pointer; font-size: 0.84rem; transition: all 0.2s;
+    }
+    .fav-toggle.active { border-color: var(--yellow); color: var(--yellow); background: rgba(245,158,11,0.1); }
+
+    /* ─── STATS ─── */
+    .stats { display: flex; gap: 12px; padding: 16px 28px; flex-wrap: wrap; }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 20px; min-width: 155px;
+      position: relative; overflow: hidden; transition: box-shadow 0.2s;
+    }
+    .stat-card:hover { box-shadow: 0 0 0 1px var(--accent), var(--card-shadow); }
+    .stat-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0.6;
+    }
+    .stat-card .label { font-size: 0.7rem; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .stat-card .value { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+
+    /* ─── TABLE ─── */
+    .table-wrap { padding: 0 28px 50px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
+
+    thead tr { background: var(--bg2); }
+    th {
+      padding: 12px 14px; text-align: left; color: var(--text2);
+      font-weight: 600; cursor: pointer; user-select: none; white-space: nowrap;
+      border-bottom: 2px solid var(--border); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;
+      transition: color 0.15s;
+    }
+    th:hover, th.sorted { color: var(--accent); }
+
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:hover { background: var(--bg2); }
+    td { padding: 11px 14px; vertical-align: middle; }
+
+    .protocol-cell { display: flex; align-items: center; gap: 8px; }
+    .protocol-avatar {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+      text-transform: uppercase;
+    }
+    .protocol-name { font-weight: 600; color: var(--text); }
+    .pool-name { color: var(--text2); font-size: 0.78rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .apy-cell { display: flex; align-items: center; gap: 6px; }
+    .apy { font-weight: 800; font-size: 0.95rem; }
+    .apy.high { color: var(--green); }
+    .apy.medium { color: var(--yellow); }
+    .apy.low { color: var(--muted); }
+
+    .trend { font-size: 0.72rem; padding: 2px 6px; border-radius: 5px; font-weight: 600; }
+    .trend.up { background: rgba(34,197,94,0.15); color: var(--green); }
+    .trend.down { background: rgba(239,68,68,0.15); color: var(--red); }
+    .trend.flat { color: var(--muted); }
+
+    .chain-badge {
+      background: var(--bg4); border: 1px solid var(--border2);
+      border-radius: 7px; padding: 3px 9px; font-size: 0.76rem;
+      color: var(--text); font-weight: 500; white-space: nowrap;
+      display: inline-flex; align-items: center;
+    }
+
+    .tvl { color: var(--text2); font-weight: 500; }
+
+    .risk-badge {
+      border-radius: 7px; padding: 3px 9px; font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .risk-low { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+    .risk-medium { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: var(--yellow); }
+    .risk-high { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+
+    .stable-badge { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: var(--green); border-radius: 7px; padding: 3px 8px; font-size: 0.72rem; font-weight: 600; }
+
+    .fav-btn { background: none; border: none; cursor: pointer; font-size: 1rem; transition: transform 0.2s; padding: 2px 4px; }
+    .fav-btn:hover { transform: scale(1.3); }
+
+    .link-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; padding: 5px 12px; border-radius: 8px;
+      text-decoration: none; font-size: 0.76rem; font-weight: 600;
+      transition: opacity 0.15s; white-space: nowrap;
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+    .link-btn:hover { opacity: 0.85; }
+
+    /* ─── LOADING / ERROR ─── */
+    #loading { text-align: center; padding: 80px; color: var(--muted); }
+    .spinner {
+      display: inline-block; width: 36px; height: 36px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;
+    }
+    .loading-text { color: var(--text2); font-size: 0.9rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #error-msg {
+      display: none; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: var(--red); padding: 14px 20px; margin: 20px 28px; border-radius: 10px;
+    }
+
+    /* ─── PAGINATION ─── */
+    .pagination { display: flex; gap: 8px; justify-content: center; padding: 16px 28px; align-items: center; }
+    .pagination button {
+      background: var(--bg2); border: 1px solid var(--border2); color: var(--text2);
+      padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.83rem; transition: all 0.15s;
+    }
+    .pagination button:hover { border-color: var(--accent); color: var(--accent); background: var(--bg3); }
+    .pagination button:disabled { opacity: 0.3; cursor: default; }
+    .pagination .page-info { color: var(--muted); font-size: 0.83rem; min-width: 100px; text-align: center; }
+
+    /* ─── EMPTY ─── */
+    .empty-state { text-align: center; padding: 60px; color: var(--muted); }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.75rem; color: var(--muted);
+      background: var(--bg2);
+    }
+    footer a { color: var(--text2); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 700px) {
+      .controls input { width: 100%; }
+      .table-wrap { padding: 0 8px 30px; }
+      .stats { padding: 10px 14px; gap: 8px; }
+      .top-picks, .controls { padding: 12px 14px; }
+      header { padding: 0 14px; }
+      .logo-text .tagline { display: none; }
+      td.hm, th.hm { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <a class="logo" href="#">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" fill="rgba(255,255,255,0.15)" stroke="white" stroke-width="1.5"/>
+          <path d="M8 12l2.5 2.5L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="name">APY Tracker</span>
+        <span class="tagline">DeFi Yields · Live Data</span>
+      </div>
+    </a>
+  </div>
+  <div class="header-right">
+    <span id="last-updated">Loading...</span>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdW1p1OggE2Um9VGlMF6Wa2EGmc1mFF9CtfBdHpGkUMbwI4Rg/viewform" target="_blank" class="hdr-btn">✉️ Contact</a>
+    <button class="hdr-btn" onclick="toggleTheme()" id="theme-btn">🌙 Dark</button>
+  </div>
+</header>
+
+<!-- TOP PICKS -->
+<div class="top-picks">
+  <div class="section-title">⭐ Top 5 Picks — Best Yield / Risk Ratio</div>
+  <div class="picks-grid" id="picks-grid">
+    <div style="color:var(--muted);font-size:0.85rem;padding:16px">Loading top picks...</div>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Search protocol or pool..." oninput="applyFilters()" />
+  </div>
+  <select id="chain-filter" onchange="applyFilters()">
+    <option value="">All Chains</option>
+  </select>
+  <select id="stable-filter" onchange="applyFilters()">
+    <option value="">All Tokens</option>
+    <option value="true">Stablecoins Only</option>
+    <option value="false">Volatile Only</option>
+  </select>
+  <select id="apy-filter" onchange="applyFilters()">
+    <option value="">All Yields</option>
+    <option value="5">APY > 5%</option>
+    <option value="10">APY > 10%</option>
+    <option value="20">APY > 20%</option>
+    <option value="50">APY > 50%</option>
+  </select>
+  <select id="risk-filter" onchange="applyFilters()">
+    <option value="">All Risk Levels</option>
+    <option value="low">🟢 Low Risk</option>
+    <option value="medium">🟡 Medium Risk</option>
+    <option value="high">🔴 High Risk</option>
+  </select>
+  <select id="sort-select" onchange="applyFilters()">
+    <option value="apy_desc">Yield ↓</option>
+    <option value="apy_asc">Yield ↑</option>
+    <option value="tvl_desc">TVL ↓</option>
+  </select>
+  <button class="fav-toggle" id="fav-toggle" onclick="toggleFavFilter()">⭐ Favorites</button>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="label">Total Pools</div>
+    <div class="value" id="stat-total">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Average APY</div>
+    <div class="value" id="stat-avg">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Highest APY</div>
+    <div class="value" id="stat-max">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Chains</div>
+    <div class="value" id="stat-chains">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Favorites</div>
+    <div class="value" id="stat-favs">0</div>
+  </div>
+</div>
+
+<div id="error-msg">⚠️ Error loading data. Please try again in a moment.</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Fetching live DeFi data...</div>
+</div>
+
+<div class="table-wrap" style="display:none" id="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:36px"></th>
+        <th onclick="setSortAndApply('protocol')">Protocol</th>
+        <th onclick="setSortAndApply('pool')">Pool</th>
+        <th onclick="setSortAndApply('chain')" class="hm">Chain</th>
+        <th onclick="setSortAndApply('apy_desc')">APY</th>
+        <th class="hm">7d Trend</th>
+        <th onclick="setSortAndApply('tvl_desc')" class="hm">TVL</th>
+        <th class="hm">Risk</th>
+        <th class="hm">Stable</th>
+        <th>Link</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+  <div class="empty-state" id="empty-state" style="display:none">
+    <div class="icon">🔍</div>
+    No pools match your filters.
+  </div>
+</div>
+
+<div class="pagination" id="pagination" style="display:none">
+  <button id="btn-prev" onclick="changePage(-1)" disabled>← Previous</button>
+  <span class="page-info" id="page-info"></span>
+  <button id="btn-next" onclick="changePage(1)">Next →</button>
+</div>
+
+<footer>
+  <span>Data provided by <a href="https://defillama.com" target="_blank">DeFiLlama</a> · Updates every 5 min</span>
+  <span>APY Tracker © 2025</span>
+</footer>
+
+<script>
+  let allPools = [], filteredPools = [], currentPage = 1;
+  const PAGE_SIZE = 50;
+  let favorites = JSON.parse(localStorage.getItem('defi_favs') || '[]');
+  let showFavOnly = false, isLight = false;
+
+  function getRisk(p) {
+    if (p.tvlUsd > 50_000_000 && p.apy < 30) return 'low';
+    if (p.tvlUsd > 5_000_000 && p.apy < 80) return 'medium';
+    return 'high';
+  }
+
+  function getTrend(p) {
+    if (!p.apyMean30d) return { label: '—', cls: 'flat' };
+    const diff = p.apy - p.apyMean30d;
+    if (diff > 2) return { label: '▲ ' + diff.toFixed(1) + '%', cls: 'up' };
+    if (diff < -2) return { label: '▼ ' + Math.abs(diff).toFixed(1) + '%', cls: 'down' };
+    return { label: '● stable', cls: 'flat' };
+  }
+
+  function isFav(id) { return favorites.includes(id); }
+
+  function toggleFav(id) {
+    favorites = isFav(id) ? favorites.filter(f => f !== id) : [...favorites, id];
+    localStorage.setItem('defi_favs', JSON.stringify(favorites));
+    document.getElementById('stat-favs').textContent = favorites.length;
+    renderPage();
+  }
+
+  function toggleFavFilter() {
+    showFavOnly = !showFavOnly;
+    document.getElementById('fav-toggle').classList.toggle('active', showFavOnly);
+    applyFilters();
+  }
+
+  function toggleTheme() {
+    isLight = !isLight;
+    document.body.classList.toggle('light', isLight);
+    document.getElementById('theme-btn').textContent = isLight ? '🌙 Dark' : '☀️ Light';
+  }
+
+  async function fetchData() {
+    try {
+      const res = await fetch('https://yields.llama.fi/pools');
+      if (!res.ok) throw new Error('API error');
+      const json = await res.json();
+      allPools = json.data.filter(p => p.apy != null && p.apy > 0 && p.tvlUsd > 10000);
+      allPools.sort((a, b) => b.apy - a.apy);
+      populateChainFilter();
+      renderTopPicks();
+      applyFilters();
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('table-wrap').style.display = '';
+      document.getElementById('pagination').style.display = 'flex';
+      document.getElementById('last-updated').textContent = 'Updated: ' + new Date().toLocaleTimeString('en');
+      document.getElementById('stat-favs').textContent = favorites.length;
+    } catch (e) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-msg').style.display = 'block';
+    }
+  }
+
+  function renderTopPicks() {
+    const scored = allPools.map(p => {
+      const risk = getRisk(p);
+      const pen = risk === 'low' ? 0 : risk === 'medium' ? 10 : 30;
+      return { ...p, score: (Math.min(p.apy, 100) * 0.4) + (Math.log10(p.tvlUsd) * 8) - pen };
+    }).sort((a, b) => b.score - a.score).slice(0, 5);
+
+    document.getElementById('picks-grid').innerHTML = scored.map((p, i) => `
+      <div class="pick-card" onclick="filterToPool('${escHtml(p.project)}')">
+        <div class="pick-rank">#${i + 1}</div>
+        <div class="pick-protocol">${escHtml(p.project)}</div>
+        <div class="pick-pool" title="${escHtml(p.symbol)}">${escHtml(p.symbol)}</div>
+        <div class="pick-apy">${p.apy.toFixed(2)}%</div>
+        <div class="pick-meta">
+          <span>${escHtml(p.chain)}</span>
+          <span>${getRisk(p)} risk</span>
+          <span>$${fmtTvl(p.tvlUsd)}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function filterToPool(protocol) {
+    document.getElementById('search').value = protocol;
+    applyFilters();
+    document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function populateChainFilter() {
+    const chains = [...new Set(allPools.map(p => p.chain))].sort();
+    const sel = document.getElementById('chain-filter');
+    while (sel.options.length > 1) sel.remove(1);
+    chains.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c; sel.appendChild(o);
+    });
+  }
+
+  function applyFilters() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const chain = document.getElementById('chain-filter').value;
+    const stable = document.getElementById('stable-filter').value;
+    const minApy = parseFloat(document.getElementById('apy-filter').value) || 0;
+    const riskF = document.getElementById('risk-filter').value;
+    const sort = document.getElementById('sort-select').value;
+
+    filteredPools = allPools.filter(p => {
+      if (showFavOnly && !isFav(p.pool)) return false;
+      if (search && !p.project.toLowerCase().includes(search) && !p.symbol.toLowerCase().includes(search)) return false;
+      if (chain && p.chain !== chain) return false;
+      if (stable === 'true' && !p.stablecoin) return false;
+      if (stable === 'false' && p.stablecoin) return false;
+      if (p.apy < minApy) return false;
+      if (riskF && getRisk(p) !== riskF) return false;
+      return true;
+    });
+
+    if (sort === 'apy_desc') filteredPools.sort((a, b) => b.apy - a.apy);
+    else if (sort === 'apy_asc') filteredPools.sort((a, b) => a.apy - b.apy);
+    else if (sort === 'tvl_desc') filteredPools.sort((a, b) => b.tvlUsd - a.tvlUsd);
+
+    updateStats(); currentPage = 1; renderPage();
+  }
+
+  function setSortAndApply(val) {
+    document.getElementById('sort-select').value = val; applyFilters();
+  }
+
+  function updateStats() {
+    const t = filteredPools.length;
+    const avg = t ? filteredPools.reduce((s, p) => s + p.apy, 0) / t : 0;
+    const max = t ? Math.max(...filteredPools.map(p => p.apy)) : 0;
+    document.getElementById('stat-total').textContent = t.toLocaleString();
+    document.getElementById('stat-avg').textContent = avg.toFixed(1) + '%';
+    document.getElementById('stat-max').textContent = max.toFixed(1) + '%';
+    document.getElementById('stat-chains').textContent = new Set(filteredPools.map(p => p.chain)).size;
+  }
+
+  function fmtTvl(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+    return (v / 1e3).toFixed(1) + 'K';
+  }
+
+  function renderPage() {
+    const page = filteredPools.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+    document.getElementById('empty-state').style.display = page.length === 0 ? 'block' : 'none';
+
+    page.forEach(p => {
+      const apyClass = p.apy >= 20 ? 'high' : p.apy >= 5 ? 'medium' : 'low';
+      const risk = getRisk(p);
+      const trend = getTrend(p);
+      const fav = isFav(p.pool);
+      const initials = p.project.substring(0, 2).toUpperCase();
+      tbody.innerHTML += `
+        <tr>
+          <td><button class="fav-btn" onclick="toggleFav('${escHtml(p.pool)}')">${fav ? '⭐' : '☆'}</button></td>
+          <td>
+            <div class="protocol-cell">
+              <div class="protocol-avatar">${initials}</div>
+              <div>
+                <div class="protocol-name">${escHtml(p.project)}</div>
+              </div>
+            </div>
+          </td>
+          <td><div class="pool-name" title="${escHtml(p.symbol)}">${escHtml(p.symbol)}</div></td>
+          <td class="hm"><span class="chain-badge">${escHtml(p.chain)}</span></td>
+          <td><span class="apy ${apyClass}">${p.apy.toFixed(2)}%</span></td>
+          <td class="hm"><span class="trend ${trend.cls}">${trend.label}</span></td>
+          <td class="tvl hm">$${fmtTvl(p.tvlUsd)}</td>
+          <td class="hm"><span class="risk-badge risk-${risk}">${risk}</span></td>
+          <td class="hm">${p.stablecoin ? '<span class="stable-badge">✓ Stable</span>' : '—'}</td>
+          <td><a href="https://defillama.com/yields/pool/${escHtml(p.pool)}" target="_blank" class="link-btn">Open →</a></td>
+        </tr>`;
+    });
+
+    const total = Math.max(1, Math.ceil(filteredPools.length / PAGE_SIZE));
+    document.getElementById('page-info').textContent = `Page ${currentPage} / ${total}`;
+    document.getElementById('btn-prev').disabled = currentPage === 1;
+    document.getElementById('btn-next').disabled = currentPage >= total;
+  }
+
+  function changePage(dir) {
+    currentPage += dir; renderPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  fetchData();
+  setInterval(fetchData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
