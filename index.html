@@ -182,6 +182,16 @@
       box-shadow: 0 2px 8px var(--accent-glow);
     }
     .link-btn:hover { opacity: 0.85; }
+    .deposit-btn {
+      background: var(--bg3); border: 1px solid var(--green);
+      color: var(--green); padding: 5px 12px; border-radius: 8px;
+      text-decoration: none; font-size: 0.76rem; font-weight: 600;
+      transition: all 0.15s; white-space: nowrap;
+    }
+    .deposit-btn:hover { background: rgba(34,197,94,0.1); }
+    .deposit-btn.indirect { border-color: var(--border2); color: var(--text2); }
+    .deposit-btn.indirect:hover { border-color: var(--accent); color: var(--accent); background: var(--bg4); }
+    .btn-group { display: flex; gap: 6px; }
     #loading { text-align: center; padding: 80px; color: var(--muted); }
     .spinner {
       display: inline-block; width: 36px; height: 36px;
@@ -220,6 +230,102 @@
       .logo-text .tagline { display: none; }
       td.hm, th.hm { display: none; }
     }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0e1220 0%, #131828 50%, #0e1220 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 28px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(67,97,238,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero h2 { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .hero h2 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 0.9rem; color: var(--text2); max-width: 560px; line-height: 1.6; margin-bottom: 16px; }
+    .hero-pills { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-pill {
+      background: var(--bg4); border: 1px solid var(--border2);
+      border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; color: var(--text2);
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* MODE TOGGLE */
+    .mode-bar {
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      padding: 10px 28px; display: flex; align-items: center; gap: 16px;
+    }
+    .mode-label { font-size: 0.78rem; color: var(--text2); }
+    .mode-toggle {
+      display: flex; background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 8px; overflow: hidden;
+    }
+    .mode-btn {
+      padding: 6px 16px; font-size: 0.8rem; cursor: pointer;
+      border: none; background: transparent; color: var(--text2); transition: all 0.2s;
+    }
+    .mode-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+    /* TOOLTIPS */
+    .tooltip-wrap { position: relative; display: inline-flex; align-items: center; gap: 4px; cursor: help; }
+    .tooltip-icon { font-size: 0.7rem; color: var(--muted); }
+    .tooltip-wrap .tooltip-box {
+      display: none; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+      background: var(--bg4); border: 1px solid var(--border2); border-radius: 8px;
+      padding: 8px 12px; font-size: 0.75rem; color: var(--text2); white-space: nowrap;
+      box-shadow: var(--card-shadow); z-index: 200; pointer-events: none;
+    }
+    .tooltip-wrap:hover .tooltip-box { display: block; }
+
+    /* DISCLAIMER */
+    .disclaimer {
+      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+      margin: 0 28px 0; border-radius: 10px; padding: 10px 16px;
+      font-size: 0.78rem; color: var(--yellow); display: flex; gap: 8px; align-items: flex-start;
+      margin-top: 12px;
+    }
+
+    /* WHAT IS DEFI */
+    .defi-explainer {
+      margin: 0 28px 30px; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+    }
+    .explainer-header {
+      padding: 14px 20px; cursor: pointer; display: flex; justify-content: space-between;
+      align-items: center; background: var(--bg3);
+    }
+    .explainer-header h3 { font-size: 0.88rem; color: var(--text); }
+    .explainer-header span { color: var(--muted); font-size: 0.8rem; }
+    .explainer-body { padding: 20px; display: none; }
+    .explainer-body.open { display: block; }
+    .explainer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .explainer-card {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+    }
+    .explainer-card .ec-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .explainer-card .ec-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .explainer-card .ec-text { font-size: 0.78rem; color: var(--text2); line-height: 1.5; }
+
+    /* HOW TO USE */
+    .how-to {
+      margin: 0 28px 24px; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px;
+    }
+    .how-to h3 { font-size: 0.85rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .steps { display: flex; gap: 12px; flex-wrap: wrap; }
+    .step { display: flex; gap: 10px; align-items: flex-start; min-width: 180px; flex: 1; }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700; color: #fff;
+    }
+    .step-text { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+    .step-text strong { color: var(--text); display: block; margin-bottom: 2px; }
   </style>
 </head>
 <body>
@@ -244,6 +350,28 @@
     <button class="hdr-btn" onclick="toggleTheme()" id="theme-btn">🌙 Dark</button>
   </div>
 </header>
+<!-- HERO -->
+<div class="hero">
+  <h2>Find the Best <span>DeFi Yields</span> — Live</h2>
+  <p>Track thousands of pools across every blockchain. Compare APY, assess risk, and put your crypto to work. Data updates every 5 minutes from DeFiLlama.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">⚡ Real-time data</span>
+    <span class="hero-pill">🔗 All blockchains</span>
+    <span class="hero-pill">🛡️ Risk scoring</span>
+    <span class="hero-pill">⭐ Save favorites</span>
+  </div>
+</div>
+
+<!-- MODE BAR -->
+<div class="mode-bar">
+  <span class="mode-label">View mode:</span>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-beginner" onclick="setMode('beginner')">🌱 Beginner</button>
+    <button class="mode-btn" id="btn-advanced" onclick="setMode('advanced')">⚡ Advanced</button>
+  </div>
+  <span class="mode-label" id="mode-desc" style="font-size:0.75rem;color:var(--muted)">Simplified view — showing key info only</span>
+</div>
+
 <div class="top-picks">
   <div class="section-title">⭐ Top 5 Picks — Best Yield / Risk Ratio</div>
   <div class="picks-grid" id="picks-grid">
@@ -288,6 +416,11 @@
   <div class="stat-card"><div class="label">Chains</div><div class="value" id="stat-chains">—</div></div>
   <div class="stat-card"><div class="label">Favorites</div><div class="value" id="stat-favs">0</div></div>
 </div>
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  ⚠️ <span><strong>Not financial advice.</strong> APY rates change frequently and past yields do not guarantee future returns. Always do your own research before depositing funds into any DeFi protocol. DeFi carries smart contract and market risks.</span>
+</div>
+
 <div id="error-msg">⚠️ Error loading data. Please try again in a moment.</div>
 <div id="loading"><div class="spinner"></div><div class="loading-text">Fetching live DeFi data...</div></div>
 <div class="table-wrap" style="display:none" id="table-wrap">
@@ -298,12 +431,24 @@
         <th onclick="setSortAndApply('protocol')">Protocol</th>
         <th onclick="setSortAndApply('pool')">Pool</th>
         <th onclick="setSortAndApply('chain')" class="hm">Chain</th>
-        <th onclick="setSortAndApply('apy_desc')">APY</th>
-        <th class="hm">7d Trend</th>
-        <th onclick="setSortAndApply('tvl_desc')" class="hm">TVL</th>
-        <th class="hm">Risk</th>
-        <th class="hm">Stable</th>
-        <th>Link</th>
+        <th onclick="setSortAndApply('apy_desc')">
+          <div class="tooltip-wrap">APY <span class="tooltip-icon">ⓘ</span>
+            <div class="tooltip-box">Annual Percentage Yield — how much you earn per year if you deposit funds</div>
+          </div>
+        </th>
+        <th class="hm adv-col">7d Trend</th>
+        <th onclick="setSortAndApply('tvl_desc')" class="hm adv-col">
+          <div class="tooltip-wrap">TVL <span class="tooltip-icon">ⓘ</span>
+            <div class="tooltip-box">Total Value Locked — total funds deposited in this pool. Higher = more trusted.</div>
+          </div>
+        </th>
+        <th class="hm adv-col">
+          <div class="tooltip-wrap">Risk <span class="tooltip-icon">ⓘ</span>
+            <div class="tooltip-box">Low: large pool, moderate APY. Medium: decent size. High: small pool or very high APY.</div>
+          </div>
+        </th>
+        <th class="hm adv-col">Stable</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody id="table-body"></tbody>
@@ -315,6 +460,59 @@
   <span class="page-info" id="page-info"></span>
   <button id="btn-next" onclick="changePage(1)">Next →</button>
 </div>
+<!-- HOW TO USE -->
+<div class="how-to">
+  <h3>📖 How to use this tracker</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-text"><strong>Browse pools</strong>Filter by chain, token type, or minimum APY to find opportunities.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><strong>Check the risk</strong>Low risk = safer but lower yield. High risk = more yield but higher chance of loss.</div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><strong>Click "Open →"</strong>Goes to DeFiLlama for full details on the protocol and pool.</div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><strong>Save favorites ⭐</strong>Star any pool to save it and track it easily.</div></div>
+  </div>
+</div>
+
+<!-- WHAT IS DEFI -->
+<div class="defi-explainer">
+  <div class="explainer-header" onclick="toggleExplainer()">
+    <h3>🌱 New to DeFi? Learn the basics</h3>
+    <span id="explainer-arrow">▼ Show</span>
+  </div>
+  <div class="explainer-body" id="explainer-body">
+    <div class="explainer-grid">
+      <div class="explainer-card">
+        <div class="ec-icon">💰</div>
+        <div class="ec-title">What is APY?</div>
+        <div class="ec-text">Annual Percentage Yield — the return you earn per year. 10% APY on $1,000 means ~$100 earned in a year.</div>
+      </div>
+      <div class="explainer-card">
+        <div class="ec-icon">🏊</div>
+        <div class="ec-title">What is a Liquidity Pool?</div>
+        <div class="ec-text">You deposit tokens into a shared pool. Traders use the pool to swap tokens, and you earn a share of their fees.</div>
+      </div>
+      <div class="explainer-card">
+        <div class="ec-icon">🏦</div>
+        <div class="ec-title">What is Lending?</div>
+        <div class="ec-text">You lend your crypto to borrowers through a smart contract. They pay interest, you earn yield.</div>
+      </div>
+      <div class="explainer-card">
+        <div class="ec-icon">⚠️</div>
+        <div class="ec-title">What are the risks?</div>
+        <div class="ec-text">Smart contract bugs, market volatility, and impermanent loss. Never invest more than you can afford to lose.</div>
+      </div>
+      <div class="explainer-card">
+        <div class="ec-icon">📊</div>
+        <div class="ec-title">What is TVL?</div>
+        <div class="ec-text">Total Value Locked — how much money is in the pool. Higher TVL generally means the protocol is more trusted.</div>
+      </div>
+      <div class="explainer-card">
+        <div class="ec-icon">🔗</div>
+        <div class="ec-title">What is a blockchain?</div>
+        <div class="ec-text">A decentralized network where transactions happen without banks. Ethereum, SUI, Solana are all different blockchains.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer>
   <span>Data provided by <a href="https://defillama.com" target="_blank">DeFiLlama</a> · Updates every 5 min</span>
   <span>APY Tracker © 2025</span>
@@ -356,7 +554,9 @@
   }
   async function fetchData(){
     try{
-      const res=await fetch('https://yields.llama.fi/pools');      const json=await res.json();
+      const res=await fetch('https://yields.llama.fi/pools');
+      if(!res.ok)throw new Error('API error');
+      const json=await res.json();
       allPools=json.data.filter(p=>p.apy!=null&&p.apy>0&&p.tvlUsd>10000);
       allPools.sort((a,b)=>b.apy-a.apy);
       populateChainFilter();
@@ -457,7 +657,18 @@
           <td class="tvl hm">$${fmtTvl(p.tvlUsd)}</td>
           <td class="hm"><span class="risk-badge risk-${risk}">${risk}</span></td>
           <td class="hm">${p.stablecoin?'<span class="stable-badge">✓ Stable</span>':'—'}</td>
-          <td><a href="https://defillama.com/yields/pool/${escHtml(p.pool)}" target="_blank" class="link-btn">Open →</a></td>
+          <td>
+            ${(()=>{
+              const d = getDepositUrl(p.project, p.pool);
+              const cls = d.direct ? 'deposit-btn' : 'deposit-btn indirect';
+              const label = d.direct ? 'Visit Protocol →' : 'View on DeFiLlama →';
+              const title = d.direct ? 'Go directly to the protocol app' : 'This protocol changes frequently — opens DeFiLlama for latest info';
+              return `<div class="btn-group">
+                <a href="https://defillama.com/yields/pool/${escHtml(p.pool)}" target="_blank" class="link-btn">Info →</a>
+                <a href="${escHtml(d.url)}" target="_blank" class="${cls}" title="${title}">${label}</a>
+              </div>`;
+            })()}
+          </td>
         </tr>`;
     });
     const total=Math.max(1,Math.ceil(filteredPools.length/PAGE_SIZE));
@@ -466,7 +677,72 @@
     document.getElementById('btn-next').disabled=currentPage>=total;
   }
   function changePage(dir){currentPage+=dir;renderPage();window.scrollTo({top:0,behavior:'smooth'});}
+  // Protocol direct deposit URLs
+  const PROTOCOL_URLS = {
+    'aave-v3':       'https://app.aave.com',
+    'aave-v2':       'https://app.aave.com',
+    'compound-v3':   'https://app.compound.finance',
+    'compound-v2':   'https://app.compound.finance',
+    'uniswap-v3':    'https://app.uniswap.org/pools',
+    'uniswap-v2':    'https://app.uniswap.org/pools',
+    'curve':         'https://curve.fi/#/ethereum/pools',
+    'convex-finance':'https://www.convexfinance.com/stake',
+    'lido':          'https://stake.lido.fi',
+    'rocket-pool':   'https://stake.rocketpool.net',
+    'cetus':         'https://app.cetus.zone/liquidity',
+    'scallop':       'https://app.scallop.io',
+    'turbos-finance':'https://app.turbos.finance',
+    'aftermath-finance': 'https://aftermath.finance/stake',
+    'navi-protocol': 'https://app.naviprotocol.io',
+    'suilend':       'https://suilend.fi',
+    'pancakeswap':   'https://pancakeswap.finance/liquidity',
+    'sushiswap':     'https://www.sushi.com/pool',
+    'balancer':      'https://app.balancer.fi/#/pools',
+    'yearn-finance': 'https://yearn.fi/vaults',
+    'morpho':        'https://app.morpho.org',
+    'spark':         'https://app.spark.fi',
+    'radiant-v2':    'https://app.radiant.capital',
+    'euler':         'https://app.euler.finance',
+  };
+
+  function getDepositUrl(project, pool) {
+    const key = project.toLowerCase().replace(/\s+/g,'-');
+    for (const [k, url] of Object.entries(PROTOCOL_URLS)) {
+      if (key.includes(k) || k.includes(key)) return { url, direct: true };
+    }
+    return { url: `https://defillama.com/yields/pool/${pool}`, direct: false };
+  }
+
   function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  // MODE
+  let currentMode = 'beginner';
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('btn-beginner').classList.toggle('active', mode==='beginner');
+    document.getElementById('btn-advanced').classList.toggle('active', mode==='advanced');
+    document.getElementById('mode-desc').textContent = mode==='beginner'
+      ? 'Simplified view — showing key info only'
+      : 'Advanced view — all columns visible';
+    document.querySelectorAll('.adv-col').forEach(el => {
+      el.style.display = mode==='advanced' ? '' : 'none';
+    });
+    // also hide stats in beginner
+    const advStats = ['stat-chains'];
+    advStats.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.closest('.stat-card').style.display = mode==='advanced' ? '' : 'none';
+    });
+  }
+  setMode('beginner');
+
+  // EXPLAINER
+  function toggleExplainer() {
+    const body = document.getElementById('explainer-body');
+    const arrow = document.getElementById('explainer-arrow');
+    body.classList.toggle('open');
+    arrow.textContent = body.classList.contains('open') ? '▲ Hide' : '▼ Show';
+  }
+
   fetchData();
   setInterval(fetchData,5*60*1000);
 </script>
