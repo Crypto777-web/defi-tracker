@@ -356,8 +356,7 @@
   }
   async function fetchData(){
     try{
-      const res=await fetch('https://yields.llama.fi/pools');
-      if(!res.ok)throw new Error('API error');
+      const res = await fetch('https://api.allorigins.win/raw?url=https://yields.llama.fi/pools');      if(!res.ok)throw new Error('API error');
       const json=await res.json();
       allPools=json.data.filter(p=>p.apy!=null&&p.apy>0&&p.tvlUsd>10000);
       allPools.sort((a,b)=>b.apy-a.apy);
