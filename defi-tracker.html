@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DeFi APY Tracker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #131626;
+      border-bottom: 1px solid #1e2340;
+      padding: 18px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      color: #00e5ff;
+      letter-spacing: 1px;
+    }
+
+    #last-updated {
+      font-size: 0.78rem;
+      color: #555f80;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 20px 30px;
+      background: #0f1120;
+      border-bottom: 1px solid #1e2340;
+      align-items: center;
+    }
+
+    .controls input, .controls select {
+      background: #1a1e30;
+      border: 1px solid #2a2f4a;
+      color: #e0e0e0;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .controls input:focus, .controls select:focus {
+      border-color: #00e5ff;
+    }
+
+    .controls input { width: 220px; }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      padding: 16px 30px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: #131626;
+      border: 1px solid #1e2340;
+      border-radius: 10px;
+      padding: 12px 20px;
+      min-width: 160px;
+    }
+
+    .stat-card .label { font-size: 0.75rem; color: #556; margin-bottom: 4px; }
+    .stat-card .value { font-size: 1.3rem; font-weight: 700; color: #00e5ff; }
+
+    .table-wrap {
+      padding: 0 30px 40px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.88rem;
+    }
+
+    thead tr {
+      background: #131626;
+      border-bottom: 2px solid #1e2340;
+    }
+
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      color: #556080;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    th:hover { color: #00e5ff; }
+
+    tbody tr {
+      border-bottom: 1px solid #161a2a;
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: #131a2e; }
+
+    td {
+      padding: 11px 14px;
+      vertical-align: middle;
+    }
+
+    .protocol-name {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .pool-name {
+      color: #8899bb;
+      font-size: 0.82rem;
+    }
+
+    .apy {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .apy.high { color: #00e676; }
+    .apy.medium { color: #ffb300; }
+    .apy.low { color: #78909c; }
+
+    .chain-badge {
+      background: #1a2040;
+      border: 1px solid #2a3060;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      color: #8899cc;
+      white-space: nowrap;
+    }
+
+    .tvl { color: #aabbcc; }
+
+    .stable-badge {
+      background: #0a2a1a;
+      border: 1px solid #0d4a2a;
+      color: #00c853;
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+    }
+
+    .link-btn {
+      background: #0a2040;
+      border: 1px solid #1a4080;
+      color: #00aaff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.78rem;
+      transition: background 0.15s;
+    }
+
+    .link-btn:hover { background: #1a3060; }
+
+    #loading {
+      text-align: center;
+      padding: 60px;
+      color: #556;
+      font-size: 1rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 28px; height: 28px;
+      border: 3px solid #1e2340;
+      border-top-color: #00e5ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #error-msg {
+      display: none;
+      background: #2a0a0a;
+      border: 1px solid #5a1a1a;
+      color: #ff6b6b;
+      padding: 14px 20px;
+      margin: 20px 30px;
+      border-radius: 8px;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 20px 30px;
+      align-items: center;
+    }
+
+    .pagination button {
+      background: #1a1e30;
+      border: 1px solid #2a2f4a;
+      color: #e0e0e0;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .pagination button:hover { border-color: #00e5ff; color: #00e5ff; }
+    .pagination button:disabled { opacity: 0.3; cursor: default; }
+    .pagination .page-info { color: #556; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      .controls input { width: 100%; }
+      .table-wrap { padding: 0 10px 30px; }
+      .stats { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ DeFi APY Tracker</h1>
+  <span id="last-updated">Učitavam podatke...</span>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="🔍 Pretraži protokol ili pool..." oninput="applyFilters()" />
+  <select id="chain-filter" onchange="applyFilters()">
+    <option value="">Svi chainsovi</option>
+  </select>
+  <select id="stable-filter" onchange="applyFilters()">
+    <option value="">Svi tokeni</option>
+    <option value="true">Samo stablecoini</option>
+    <option value="false">Samo volatile</option>
+  </select>
+  <select id="apy-filter" onchange="applyFilters()">
+    <option value="">Svi prinosi</option>
+    <option value="5">APY > 5%</option>
+    <option value="10">APY > 10%</option>
+    <option value="20">APY > 20%</option>
+    <option value="50">APY > 50%</option>
+  </select>
+  <select id="sort-select" onchange="applyFilters()">
+    <option value="apy_desc">Prinos ↓</option>
+    <option value="apy_asc">Prinos ↑</option>
+    <option value="tvl_desc">TVL ↓</option>
+  </select>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="label">Ukupno poolova</div>
+    <div class="value" id="stat-total">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Prosečan APY</div>
+    <div class="value" id="stat-avg">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Najviši APY</div>
+    <div class="value" id="stat-max">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Chainsovi</div>
+    <div class="value" id="stat-chains">—</div>
+  </div>
+</div>
+
+<div id="error-msg">⚠️ Greška pri učitavanju podataka. Pokušaj ponovo za koji trenutak.</div>
+
+<div id="loading">
+  <div class="spinner"></div><br/>
+  Učitavam DeFi podatke...
+</div>
+
+<div class="table-wrap" style="display:none" id="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th onclick="setSortAndApply('protocol')">Protokol</th>
+        <th onclick="setSortAndApply('pool')">Pool</th>
+        <th onclick="setSortAndApply('chain')">Chain</th>
+        <th onclick="setSortAndApply('apy_desc')">APY</th>
+        <th onclick="setSortAndApply('tvl_desc')">TVL</th>
+        <th>Stablecoin</th>
+        <th>Link</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</div>
+
+<div class="pagination" id="pagination" style="display:none">
+  <button id="btn-prev" onclick="changePage(-1)" disabled>← Prethodna</button>
+  <span class="page-info" id="page-info"></span>
+  <button id="btn-next" onclick="changePage(1)">Sledeća →</button>
+</div>
+
+<script>
+  let allPools = [];
+  let filteredPools = [];
+  let currentPage = 1;
+  const PAGE_SIZE = 50;
+
+  async function fetchData() {
+    try {
+      const res = await fetch('https://yields.llama.fi/pools');
+      if (!res.ok) throw new Error('API greška');
+      const json = await res.json();
+      allPools = json.data.filter(p => p.apy != null && p.apy > 0 && p.tvlUsd > 10000);
+      allPools.sort((a, b) => b.apy - a.apy);
+      populateChainFilter();
+      applyFilters();
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('table-wrap').style.display = '';
+      document.getElementById('pagination').style.display = 'flex';
+      const now = new Date();
+      document.getElementById('last-updated').textContent = 'Ažurirano: ' + now.toLocaleTimeString('sr');
+    } catch (e) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-msg').style.display = 'block';
+    }
+  }
+
+  function populateChainFilter() {
+    const chains = [...new Set(allPools.map(p => p.chain))].sort();
+    const sel = document.getElementById('chain-filter');
+    chains.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  }
+
+  function applyFilters() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const chain = document.getElementById('chain-filter').value;
+    const stable = document.getElementById('stable-filter').value;
+    const minApy = parseFloat(document.getElementById('apy-filter').value) || 0;
+    const sort = document.getElementById('sort-select').value;
+
+    filteredPools = allPools.filter(p => {
+      if (search && !p.project.toLowerCase().includes(search) && !p.symbol.toLowerCase().includes(search)) return false;
+      if (chain && p.chain !== chain) return false;
+      if (stable === 'true' && !p.stablecoin) return false;
+      if (stable === 'false' && p.stablecoin) return false;
+      if (p.apy < minApy) return false;
+      return true;
+    });
+
+    if (sort === 'apy_desc') filteredPools.sort((a, b) => b.apy - a.apy);
+    else if (sort === 'apy_asc') filteredPools.sort((a, b) => a.apy - b.apy);
+    else if (sort === 'tvl_desc') filteredPools.sort((a, b) => b.tvlUsd - a.tvlUsd);
+
+    updateStats();
+    currentPage = 1;
+    renderPage();
+  }
+
+  function setSortAndApply(val) {
+    document.getElementById('sort-select').value = val;
+    applyFilters();
+  }
+
+  function updateStats() {
+    const total = filteredPools.length;
+    const avg = total ? (filteredPools.reduce((s, p) => s + p.apy, 0) / total) : 0;
+    const max = total ? Math.max(...filteredPools.map(p => p.apy)) : 0;
+    const chains = new Set(filteredPools.map(p => p.chain)).size;
+    document.getElementById('stat-total').textContent = total.toLocaleString();
+    document.getElementById('stat-avg').textContent = avg.toFixed(1) + '%';
+    document.getElementById('stat-max').textContent = max.toFixed(1) + '%';
+    document.getElementById('stat-chains').textContent = chains;
+  }
+
+  function renderPage() {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const page = filteredPools.slice(start, start + PAGE_SIZE);
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+
+    page.forEach(p => {
+      const apy = p.apy;
+      const apyClass = apy >= 20 ? 'high' : apy >= 5 ? 'medium' : 'low';
+      const tvl = p.tvlUsd >= 1e9 ? (p.tvlUsd / 1e9).toFixed(2) + 'B' :
+                  p.tvlUsd >= 1e6 ? (p.tvlUsd / 1e6).toFixed(2) + 'M' :
+                  (p.tvlUsd / 1e3).toFixed(1) + 'K';
+      const url = `https://defillama.com/yields/pool/${p.pool}`;
+      tbody.innerHTML += `
+        <tr>
+          <td class="protocol-name">${escHtml(p.project)}</td>
+          <td class="pool-name">${escHtml(p.symbol)}</td>
+          <td><span class="chain-badge">${escHtml(p.chain)}</span></td>
+          <td><span class="apy ${apyClass}">${apy.toFixed(2)}%</span></td>
+          <td class="tvl">$${tvl}</td>
+          <td>${p.stablecoin ? '<span class="stable-badge">✓ Stable</span>' : '—'}</td>
+          <td><a href="${url}" target="_blank" class="link-btn">Otvori →</a></td>
+        </tr>`;
+    });
+
+    const totalPages = Math.ceil(filteredPools.length / PAGE_SIZE);
+    document.getElementById('page-info').textContent = `Strana ${currentPage} / ${totalPages}`;
+    document.getElementById('btn-prev').disabled = currentPage === 1;
+    document.getElementById('btn-next').disabled = currentPage === totalPages;
+  }
+
+  function changePage(dir) {
+    currentPage += dir;
+    renderPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  fetchData();
+  setInterval(fetchData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
